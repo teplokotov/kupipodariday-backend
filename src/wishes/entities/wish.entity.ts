@@ -2,6 +2,7 @@ import { IsPositive, IsUrl, Length } from 'class-validator';
 import {
   Column,
   Entity,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -42,6 +43,7 @@ export class Wish {
   raised: number;
 
   @ManyToOne(() => User, (user) => user.wishes)
+  @JoinTable()
   owner: User;
 
   @Column()
