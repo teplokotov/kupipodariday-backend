@@ -5,6 +5,7 @@ import {
   IsString,
   IsUrl,
   Length,
+  Min,
 } from 'class-validator';
 import { User } from 'src/users/entities/user.entity';
 
@@ -37,12 +38,12 @@ export class WishDto {
   image: string;
 
   @IsNumber()
-  @Length(1)
+  @Min(1)
   @IsNotEmpty()
   price: number;
 
   @IsNumber()
-  @Length(1)
+  @Min(1)
   @IsNotEmpty()
   raised: number;
 

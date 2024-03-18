@@ -1,4 +1,4 @@
-import { IsBoolean, IsDate, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsBoolean, IsDate, IsNotEmpty, IsNumber, Min } from 'class-validator';
 import { User } from 'src/users/entities/user.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
 
@@ -22,6 +22,7 @@ export class OfferDto {
   item: Wish;
 
   @IsNumber()
+  @Min(1)
   @IsNotEmpty()
   amount: number;
 
