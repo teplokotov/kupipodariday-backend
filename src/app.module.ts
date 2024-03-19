@@ -21,6 +21,7 @@ import { Offer } from './offers/entities/offer.entity';
       username: 'student',
       password: 'student',
       database: 'kupipodariday',
+      schema: 'public',
       entities: [User, Wishlist, Wish, Offer],
       synchronize: true,
     }),

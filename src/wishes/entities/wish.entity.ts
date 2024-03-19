@@ -1,11 +1,12 @@
 import { IsPositive, IsUrl, Length } from 'class-validator';
 import {
   Column,
+  CreateDateColumn,
   Entity,
-  JoinTable,
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Offer } from 'src/offers/entities/offer.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -16,10 +17,10 @@ export class Wish {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @CreateDateColumn()
   createdAt: Date;
 
-  @Column()
+  @UpdateDateColumn()
   updatedAt: Date;
 
   @Column()
@@ -43,7 +44,6 @@ export class Wish {
   raised: number;
 
   @ManyToOne(() => User, (user) => user.wishes)
-  @JoinTable()
   owner: User;
 
   @Column()

@@ -2,10 +2,11 @@ import { User } from 'src/users/entities/user.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
-  JoinTable,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -13,18 +14,16 @@ export class Offer {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @CreateDateColumn()
   createdAt: Date;
 
-  @Column()
+  @UpdateDateColumn()
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.offers)
-  @JoinTable()
   user: User;
 
   @ManyToOne(() => Wish, (wish) => wish.offers)
-  @JoinTable()
   item: Wish;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })

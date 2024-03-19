@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsBoolean, IsDate, IsNotEmpty, IsNumber, Min } from 'class-validator';
 import { User } from 'src/users/entities/user.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
@@ -9,10 +10,12 @@ export class OfferDto {
 
   @IsDate()
   @IsNotEmpty()
+  @Type(() => Date)
   createdAt: Date;
 
   @IsDate()
   @IsNotEmpty()
+  @Type(() => Date)
   updatedAt: Date;
 
   @IsNotEmpty()

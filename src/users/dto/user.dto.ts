@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsDate,
   IsEmail,
@@ -45,9 +46,11 @@ export class UserDto {
 
   @IsDate()
   @IsNotEmpty()
+  @Type(() => Date)
   createdAt: Date;
 
   @IsDate()
   @IsNotEmpty()
+  @Type(() => Date)
   updatedAt: Date;
 }

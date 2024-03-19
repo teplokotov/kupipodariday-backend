@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsDate,
   IsNotEmpty,
@@ -16,10 +17,12 @@ export class WishDto {
 
   @IsDate()
   @IsNotEmpty()
+  @Type(() => Date)
   createdAt: Date;
 
   @IsDate()
   @IsNotEmpty()
+  @Type(() => Date)
   updatedAt: Date;
 
   @IsString()

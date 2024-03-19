@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsDate,
   IsNotEmpty,
@@ -17,10 +18,12 @@ export class WishlistDto {
 
   @IsDate()
   @IsNotEmpty()
+  @Type(() => Date)
   createdAt: Date;
 
   @IsDate()
   @IsNotEmpty()
+  @Type(() => Date)
   updatedAt: Date;
 
   @ApiProperty({ example: 'Мой вишлист' })
