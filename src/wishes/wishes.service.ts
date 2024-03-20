@@ -1,4 +1,9 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { User } from 'src/users/entities/user.entity';
@@ -35,14 +40,14 @@ export class WishesService {
   }
 
   async update(id: number, dto: UpdateWishDto, userId: number) {
-    if (userId !== id) {
-      throw new ForbiddenException('You can update only your wish');
-    }
-
     const wish = await this.wishesRepository.findOneBy({ id });
 
     if (!wish) {
       throw new NotFoundException('Wish not found');
+    }
+
+    if (wish.owner.id !== userId) {
+      throw new ForbiddenException('You can update only your wish');
     }
 
     if (wish.offers.length > 0) {
@@ -53,16 +58,50 @@ export class WishesService {
   }
 
   async remove(id: number, userId: number) {
-    if (userId !== id) {
-      throw new ForbiddenException('You can delete only your wish');
-    }
-
     const wish = await this.wishesRepository.findOneBy({ id });
 
     if (!wish) {
       throw new NotFoundException('Wish not found');
     }
 
+    if (wish.owner.id !== userId) {
+      throw new ForbiddenException('You can delete only your wish');
+    }
+
     return this.wishesRepository.delete(id);
+  }
+
+  async findLast(): Promise<Wish[]> {
+    return this.wishesRepository.find({
+      take: 40,
+      order: { createdAt: 'DESC' },
+      relations: ['owner', 'offers'],
+    });
+  }
+
+  async findTop(): Promise<Wish[]> {
+    return this.wishesRepository.find({
+      take: 10,
+      order: { copied: 'ASC' },
+      relations: ['owner', 'offers'],
+    });
+  }
+
+  async copy(id: number, userId: number) {
+    const wish = await this.wishesRepository.findOneBy({ id });
+
+    if (!wish) {
+      throw new NotFoundException('Wish not found');
+    }
+
+    if (wish.owner.id === userId) {
+      throw new ForbiddenException('You can not copy your own wish');
+    }
+
+    try {
+      return this.wishesRepository.save({ ...wish, copied: wish.copied + 1 });
+    } catch (e) {
+      throw new BadRequestException('Wish not copied');
+    }
   }
 }

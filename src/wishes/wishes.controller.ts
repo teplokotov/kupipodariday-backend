@@ -46,7 +46,21 @@ export class WishesController {
   @Delete(':id')
   @HttpCode(204)
   remove(@AuthUser() user: User, @Param('id') id: string) {
-    const { id: userId } = user;
-    return this.wishesService.remove(+id, +userId);
+    return this.wishesService.remove(+id, +user.id);
+  }
+
+  @Get('last')
+  findLast(): Promise<Wish[]> {
+    return this.wishesService.findLast();
+  }
+
+  @Get('top')
+  findTop(): Promise<Wish[]> {
+    return this.wishesService.findTop();
+  }
+
+  @Get(':id/copy')
+  copy(@AuthUser() user: User, @Param('id') id: string): Promise<Wish> {
+    return this.wishesService.copy(+id, +user.id);
   }
 }
