@@ -14,6 +14,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { UserPublicProfileResponseDto } from './dto/user-public-profile-response.dto';
+import { AuthUser } from 'src/common/decorators/user.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -30,8 +31,8 @@ export class UsersController {
   }
 
   @Get('me')
-  async findOne(@Body() dto: UserProfileResponseDto): Promise<User> {
-    const { id } = dto;
+  async findOne(@AuthUser() user: User): Promise<User> {
+    const { id } = user;
     return this.usersService.findOne({
       where: { id },
       select: {
@@ -47,8 +48,8 @@ export class UsersController {
   }
 
   @Patch('me')
-  async update(@Body() dto: UpdateUserDto) {
-    const id = 16;
+  async update(@AuthUser() user: User, @Body() dto: UpdateUserDto) {
+    const { id } = user;
     return this.usersService.updateOne(id, dto);
   }
 

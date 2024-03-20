@@ -54,7 +54,7 @@ export class UsersService {
     return this.usersRepository.findOne(query);
   }
 
-  async updateOne(id: number, dto: UpdateUserDto, user?: User) {
+  async updateOne(id: number, dto: UpdateUserDto): Promise<User> {
     const { password } = dto;
     const userToUpdate = await this.usersRepository.findOneBy({ id });
 
@@ -62,19 +62,16 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    // if (userToUpdate.id !== user.id) {
-    //   throw new ForbiddenException('You can update only your profile');
-    // }
-
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
       return this.usersRepository.save({
-        ...userToUpdate,
+        ...dto,
+        id,
         password: hashedPassword,
       });
     }
 
-    return this.usersRepository.save(dto);
+    return this.usersRepository.save({ ...dto, id });
   }
 
   async removeOne(id: number, dto: UserProfileResponseDto) {
