@@ -86,14 +86,14 @@ export class UsersService {
     return this.usersRepository.save({ ...dto, id });
   }
 
-  async removeOne(id: number, dto: UserProfileResponseDto) {
+  async removeOne(id: number, userId: number) {
     const user = await this.usersRepository.findOneBy({ id });
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    if (user.id !== dto.id) {
+    if (user.id !== userId) {
       throw new ForbiddenException('You can remove only your profile');
     }
 

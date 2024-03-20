@@ -58,8 +58,9 @@ export class UsersController {
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param('id') id: string, @Body() dto: UserProfileResponseDto) {
-    return this.usersService.removeOne(+id, dto);
+  remove(@AuthUser() user: User, @Param('id') id: string) {
+    const { id: userId } = user;
+    return this.usersService.removeOne(+id, +userId);
   }
 
   @Get(':username')
