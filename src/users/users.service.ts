@@ -47,18 +47,30 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+    const users = await this.usersRepository.find();
+
+    if (users.length === 0) {
+      throw new NotFoundException('Users not found');
+    }
+
+    return users;
   }
 
   async findOne(query: FindOneOptions<User>): Promise<User> {
-    return this.usersRepository.findOne(query);
+    const user = await this.usersRepository.findOne(query);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
   }
 
   async updateOne(id: number, dto: UpdateUserDto): Promise<User> {
     const { password } = dto;
-    const userToUpdate = await this.usersRepository.findOneBy({ id });
+    const user = await this.usersRepository.findOneBy({ id });
 
-    if (!userToUpdate) {
+    if (!user) {
       throw new NotFoundException('User not found');
     }
 
@@ -75,13 +87,13 @@ export class UsersService {
   }
 
   async removeOne(id: number, dto: UserProfileResponseDto) {
-    const userToRemove = await this.usersRepository.findOneBy({ id });
+    const user = await this.usersRepository.findOneBy({ id });
 
-    if (!userToRemove) {
+    if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    if (userToRemove.id !== dto.id) {
+    if (user.id !== dto.id) {
       throw new ForbiddenException('You can remove only your profile');
     }
 
@@ -89,8 +101,23 @@ export class UsersService {
   }
 
   async findMany(query: string): Promise<User | User[]> {
-    return this.usersRepository.find({
+    const users = await this.usersRepository.find({
       where: [{ username: query }, { email: query }],
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        username: true,
+        about: true,
+        avatar: true,
+        email: true,
+      },
     });
+
+    if (users.length === 0) {
+      throw new NotFoundException('User not found');
+    }
+
+    return users;
   }
 }

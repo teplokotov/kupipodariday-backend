@@ -15,6 +15,9 @@ import { User } from './entities/user.entity';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { UserPublicProfileResponseDto } from './dto/user-public-profile-response.dto';
 import { AuthUser } from 'src/common/decorators/user.decorator';
+import { FindUsersDto } from './dto/find-users.dto';
+import { Wish } from 'src/wishes/entities/wish.entity';
+import { UserWishesDto } from './dto/user-wishes.dto';
 
 @Controller('users')
 export class UsersController {
@@ -57,5 +60,56 @@ export class UsersController {
   @HttpCode(204)
   remove(@Param('id') id: string, @Body() dto: UserProfileResponseDto) {
     return this.usersService.removeOne(+id, dto);
+  }
+
+  @Get(':username')
+  async getUser(
+    @Param('username') username: string,
+  ): Promise<UserPublicProfileResponseDto> {
+    return this.usersService.findOne({
+      where: { username },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        username: true,
+        about: true,
+        avatar: true,
+      },
+    });
+  }
+
+  @Post('find')
+  @HttpCode(200)
+  findMany(@Body() dto: FindUsersDto): Promise<User | User[]> {
+    const { query } = dto;
+    return this.usersService.findMany(query);
+  }
+
+  @Get('me/wishes')
+  async getOwnWishes(@AuthUser() user: User): Promise<Wish[]> {
+    const { id } = user;
+    const { wishes } = await this.usersService.findOne({
+      where: { id },
+      relations: {
+        wishes: true,
+      },
+    });
+    return wishes;
+  }
+
+  @Get(':username/wishes')
+  async getPublicWishes(
+    @Param('username') username: string,
+  ): Promise<UserWishesDto[]> {
+    const { wishes } = await this.usersService.findOne({
+      where: { username },
+      relations: {
+        wishes: {
+          owner: false,
+        },
+      },
+    });
+    return wishes;
   }
 }
