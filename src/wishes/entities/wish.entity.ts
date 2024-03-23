@@ -51,7 +51,7 @@ export class Wish {
   description: string;
 
   @ManyToOne(() => Offer, (offer) => offer.item)
-  offers: number[];
+  offers: Offer[];
 
   @Column({ type: 'int', default: 0 })
   copied: number;

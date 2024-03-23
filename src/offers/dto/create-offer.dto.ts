@@ -1,4 +1,13 @@
-import { PartialType } from '@nestjs/swagger';
-import { OfferDto } from './offer.dto';
+import { IsBoolean, IsNumber, Min } from 'class-validator';
 
-export class CreateOfferDto extends PartialType(OfferDto) {}
+export class CreateOfferDto {
+  @IsNumber()
+  @Min(1)
+  amount: number;
+
+  @IsBoolean()
+  hidden: boolean;
+
+  @IsNumber()
+  itemId: number;
+}

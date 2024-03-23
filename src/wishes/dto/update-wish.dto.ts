@@ -1,4 +1,10 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateWishDto } from './create-wish.dto';
+import { OmitType, PartialType } from '@nestjs/swagger';
+import { WishDto } from './wish.dto';
 
-export class UpdateWishDto extends PartialType(CreateWishDto) {}
+export class UpdateWishDto extends OmitType(WishDto, [
+  'id',
+  'createdAt',
+  'updatedAt',
+  'owner',
+  'copied',
+]) {}

@@ -31,7 +31,10 @@ export class WishesController {
 
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Wish> {
-    return this.wishesService.findOne(+id);
+    return this.wishesService.findOne({
+      where: { id: +id },
+      relations: ['owner', 'offers'],
+    });
   }
 
   @Patch(':id')

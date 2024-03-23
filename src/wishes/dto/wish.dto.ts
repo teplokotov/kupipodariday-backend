@@ -8,6 +8,7 @@ import {
   Length,
   Min,
 } from 'class-validator';
+import { Offer } from 'src/offers/entities/offer.entity';
 import { User } from 'src/users/entities/user.entity';
 
 export class WishDto {
@@ -59,7 +60,7 @@ export class WishDto {
   description: string;
 
   @IsNotEmpty()
-  offers: number[];
+  offers: Offer[];
 
   @IsNotEmpty()
   copied: number;
