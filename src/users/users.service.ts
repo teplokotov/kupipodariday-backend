@@ -5,12 +5,10 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { FindOneOptions, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { UserPublicProfileResponseDto } from './dto/user-public-profile-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -38,7 +36,9 @@ export class UsersService {
     });
 
     const {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       password: _password,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       email: _email,
       ...rest
     } = JSON.parse(JSON.stringify(user));

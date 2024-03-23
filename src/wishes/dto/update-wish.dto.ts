@@ -1,4 +1,4 @@
-import { OmitType, PartialType } from '@nestjs/swagger';
+import { OmitType } from '@nestjs/swagger';
 import { WishDto } from './wish.dto';
 
 export class UpdateWishDto extends OmitType(WishDto, [
