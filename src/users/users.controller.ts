@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -17,7 +18,9 @@ import { AuthUser } from 'src/common/decorators/user.decorator';
 import { FindUsersDto } from './dto/find-users.dto';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { UserWishesDto } from './dto/user-wishes.dto';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
