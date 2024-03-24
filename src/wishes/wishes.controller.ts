@@ -33,6 +33,16 @@ export class WishesController {
     return this.wishesService.findAll();
   }
 
+  @Get('last')
+  findLast(): Promise<Wish[]> {
+    return this.wishesService.findLast();
+  }
+
+  @Get('top')
+  findTop(): Promise<Wish[]> {
+    return this.wishesService.findTop();
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Wish> {
@@ -57,16 +67,6 @@ export class WishesController {
   @HttpCode(204)
   remove(@AuthUser() user: User, @Param('id') id: string) {
     return this.wishesService.remove(+id, +user.id);
-  }
-
-  @Get('last')
-  findLast(): Promise<Wish[]> {
-    return this.wishesService.findLast();
-  }
-
-  @Get('top')
-  findTop(): Promise<Wish[]> {
-    return this.wishesService.findTop();
   }
 
   @UseGuards(JwtAuthGuard)
