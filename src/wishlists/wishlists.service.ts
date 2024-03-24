@@ -43,10 +43,6 @@ export class WishlistsService {
       relations: ['owner', 'items'],
     });
 
-    if (wishlist.length === 0) {
-      throw new NotFoundException('Wishlists not found');
-    }
-
     return wishlist;
   }
 

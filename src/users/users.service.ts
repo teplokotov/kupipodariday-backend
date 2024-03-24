@@ -114,10 +114,6 @@ export class UsersService {
       },
     });
 
-    if (users.length === 0) {
-      throw new NotFoundException('User not found');
-    }
-
     return users;
   }
 }

@@ -71,10 +71,6 @@ export class OffersService {
       },
     });
 
-    if (offers.length === 0) {
-      throw new NotFoundException('Offers not found');
-    }
-
     return offers;
   }
 
