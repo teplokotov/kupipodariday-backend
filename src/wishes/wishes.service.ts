@@ -18,8 +18,13 @@ export class WishesService {
     private wishesRepository: Repository<Wish>,
   ) {}
 
-  create(dto: CreateWishDto, user: User) {
-    return this.wishesRepository.save({ ...dto, user });
+  create(dto: CreateWishDto, user: User): Promise<Wish> {
+    return this.wishesRepository.save({
+      ...dto,
+      copied: 0,
+      raised: 0,
+      owner: user,
+    });
   }
 
   async findAll(): Promise<Wish[]> {
