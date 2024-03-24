@@ -17,7 +17,7 @@ import { Wishlist } from './entities/wishlist.entity';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
-@Controller('wishlists')
+@Controller('wishlistlists')
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
