@@ -27,6 +27,7 @@ export class WishlistsService {
       name,
       image,
       owner: user,
+      description: '',
       items: wishes,
     });
 
