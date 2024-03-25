@@ -70,8 +70,8 @@ export class WishesController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get(':id/copy')
-  copy(@AuthUser() user: User, @Param('id') id: string): Promise<Wish> {
-    return this.wishesService.copy(+id, +user.id);
+  @Post(':id/copy')
+  copy(@AuthUser() user: User, @Param('id') id: string) {
+    return this.wishesService.copy(+id, user);
   }
 }

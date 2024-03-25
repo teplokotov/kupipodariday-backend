@@ -9,22 +9,32 @@ import { UpdateWishDto } from './dto/update-wish.dto';
 import { User } from 'src/users/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wish } from './entities/wish.entity';
-import { FindOneOptions, Repository } from 'typeorm';
+import { DataSource, FindOneOptions, Repository } from 'typeorm';
 
 @Injectable()
 export class WishesService {
   constructor(
     @InjectRepository(Wish)
     private wishesRepository: Repository<Wish>,
+    private readonly dataSource: DataSource,
   ) {}
 
-  create(dto: CreateWishDto, user: User): Promise<Wish> {
-    return this.wishesRepository.save({
+  async create(dto: CreateWishDto, user: User): Promise<Wish> {
+    const insertResult = await this.wishesRepository.insert({
       ...dto,
       copied: 0,
       raised: 0,
       owner: user,
     });
+
+    const id = insertResult.identifiers[0].id;
+    const wish = await this.wishesRepository.findOneBy({ id });
+
+    if (!wish) {
+      throw new NotFoundException('Wish not created');
+    }
+
+    return wish;
   }
 
   async findAll(): Promise<Wish[]> {
@@ -95,21 +105,44 @@ export class WishesService {
     });
   }
 
-  async copy(id: number, userId: number) {
-    const wish = await this.wishesRepository.findOneBy({ id });
+  async copy(id: number, user: User) {
+    const wish = await this.wishesRepository.findOne({
+      where: { id },
+      relations: ['owner'],
+    });
 
     if (!wish) {
       throw new NotFoundException('Wish not found');
     }
 
-    if (wish.owner.id === userId) {
+    if (wish.owner.id === user.id) {
       throw new ForbiddenException('You can not copy your own wish');
     }
 
+    const hasCopied = await this.wishesRepository.findOneBy({
+      name: wish.name,
+      link: wish.link,
+      image: wish.image,
+      price: wish.price,
+      owner: { id: user.id },
+    });
+
+    if (hasCopied) {
+      throw new ForbiddenException('You already have copied this wish');
+    }
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
-      return this.wishesRepository.save({ ...wish, copied: wish.copied + 1 });
-    } catch (e) {
-      throw new BadRequestException('Wish not copied');
+      await this.create(wish, user);
+      await this.wishesRepository.update(id, { copied: wish.copied + 1 });
+      return wish;
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
     }
   }
 }
