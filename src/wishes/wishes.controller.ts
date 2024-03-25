@@ -48,7 +48,7 @@ export class WishesController {
   findOne(@Param('id') id: string): Promise<Wish> {
     return this.wishesService.findOne({
       where: { id: +id },
-      relations: ['owner', 'offers'],
+      relations: ['owner', 'offers', 'offers.user'],
     });
   }
 

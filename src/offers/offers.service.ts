@@ -36,7 +36,7 @@ export class OffersService {
       throw new ForbiddenException('You can not offer your own wish');
     }
 
-    if (wish.price < wish.raised + dto.amount) {
+    if (Number(wish.price) < Number(wish.raised) + Number(dto.amount)) {
       throw new ForbiddenException('You can not raise more than wish price');
     }
 
@@ -47,16 +47,17 @@ export class OffersService {
     });
 
     try {
-      await this.offersRepository.save(offer);
       await this.wishesService.update(
         dto.itemId,
         {
-          raised: wish.raised + dto.amount,
+          raised: Number(wish.raised) + Number(dto.amount),
           offers: [...wish.offers, offer],
         },
-        user.id,
+        wish.owner.id,
       );
-    } catch (e) {
+      await this.offersRepository.save(offer);
+    } catch (err) {
+      console.log(err);
       throw new BadRequestException('Offer not created');
     }
 

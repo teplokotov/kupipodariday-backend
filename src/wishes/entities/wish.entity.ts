@@ -5,6 +5,7 @@ import {
   Entity,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -50,7 +51,7 @@ export class Wish {
   @Length(1, 1024)
   description: string;
 
-  @ManyToOne(() => Offer, (offer) => offer.item)
+  @OneToMany(() => Offer, (offer) => offer.item)
   offers: Offer[];
 
   @Column({ type: 'int', default: 0 })

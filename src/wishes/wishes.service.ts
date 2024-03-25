@@ -9,14 +9,13 @@ import { UpdateWishDto } from './dto/update-wish.dto';
 import { User } from 'src/users/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wish } from './entities/wish.entity';
-import { DataSource, FindOneOptions, Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 
 @Injectable()
 export class WishesService {
   constructor(
     @InjectRepository(Wish)
     private wishesRepository: Repository<Wish>,
-    private readonly dataSource: DataSource,
   ) {}
 
   async create(dto: CreateWishDto, user: User): Promise<Wish> {
@@ -58,7 +57,10 @@ export class WishesService {
   }
 
   async update(id: number, dto: Partial<UpdateWishDto>, userId: number) {
-    const wish = await this.wishesRepository.findOneBy({ id });
+    const wish = await this.wishesRepository.findOne({
+      where: { id },
+      relations: ['owner', 'offers'],
+    });
 
     if (!wish) {
       throw new NotFoundException('Wish not found');
@@ -76,7 +78,10 @@ export class WishesService {
   }
 
   async remove(id: number, userId: number) {
-    const wish = await this.wishesRepository.findOneBy({ id });
+    const wish = await this.wishesRepository.findOne({
+      where: { id },
+      relations: ['owner'],
+    });
 
     if (!wish) {
       throw new NotFoundException('Wish not found');
@@ -131,18 +136,13 @@ export class WishesService {
       throw new ForbiddenException('You already have copied this wish');
     }
 
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
     try {
       await this.create(wish, user);
       await this.wishesRepository.update(id, { copied: wish.copied + 1 });
-      return wish;
     } catch (err) {
-      await queryRunner.rollbackTransaction();
-    } finally {
-      await queryRunner.release();
+      throw new BadRequestException('Wish not copied');
     }
+
+    return wish;
   }
 }
