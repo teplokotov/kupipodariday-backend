@@ -70,7 +70,7 @@ export class WishesService {
       throw new ForbiddenException('You can update only your wish');
     }
 
-    if (wish.offers.length > 0) {
+    if (!dto.raised && wish.offers.length > 0) {
       throw new BadRequestException('You can not update wish with offers');
     }
 
