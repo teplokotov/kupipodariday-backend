@@ -67,7 +67,26 @@ export class UsersService {
   }
 
   async updateOne(id: number, dto: UpdateUserDto): Promise<User> {
-    const { password } = dto;
+    const { username, email, password } = dto;
+
+    if (username) {
+      const isUsernameExists = await this.usersRepository.findOneBy({
+        username,
+      });
+
+      if (isUsernameExists && isUsernameExists.id !== id) {
+        throw new ForbiddenException('Username already exists');
+      }
+    }
+
+    if (email) {
+      const isEmailExists = await this.usersRepository.findOneBy({ email });
+
+      if (isEmailExists && isEmailExists.id !== id) {
+        throw new ForbiddenException('Email already exists');
+      }
+    }
+
     const user = await this.usersRepository.findOneBy({ id });
 
     if (!user) {
