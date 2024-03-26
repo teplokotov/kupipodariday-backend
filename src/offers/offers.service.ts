@@ -7,9 +7,10 @@ import {
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Offer } from './entities/offer.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { WishesService } from 'src/wishes/wishes.service';
 import { User } from 'src/users/entities/user.entity';
+import { Wish } from 'src/wishes/entities/wish.entity';
 
 @Injectable()
 export class OffersService {
@@ -17,6 +18,7 @@ export class OffersService {
     @InjectRepository(Offer)
     private offersRepository: Repository<Offer>,
     private wishesService: WishesService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(user: User, dto: CreateOfferDto): Promise<Offer> {
@@ -46,19 +48,22 @@ export class OffersService {
       item: wish,
     });
 
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
-      await this.wishesService.update(
-        dto.itemId,
-        {
-          raised: Number(wish.raised) + Number(dto.amount),
-          offers: [...wish.offers, offer],
-        },
-        wish.owner.id,
-      );
-      await this.offersRepository.save(offer);
+      await queryRunner.manager.update(Wish, dto.itemId, {
+        raised: Number(wish.raised) + Number(dto.amount),
+      });
+      await queryRunner.manager.insert(Offer, offer);
+      await queryRunner.commitTransaction();
     } catch (err) {
       console.log(err);
+      await queryRunner.rollbackTransaction();
       throw new BadRequestException('Offer not created');
+    } finally {
+      await queryRunner.release();
     }
 
     return offer;
